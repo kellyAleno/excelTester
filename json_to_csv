@@ -1,0 +1,49 @@
+import csv
+import json
+import io
+
+
+if __name__ == "__main__":
+    header = ["intent", "confidence", "input", "output"]
+
+    vogue_file = "VogueCodeLogs.txt"
+    vogue_str = open(vogue_file, 'r').read()
+    print(header)
+    vogue_parsed = json.loads(vogue_str)
+    vogue_data = vogue_parsed['logs']
+
+    # open a file for writing
+    vogue_csv1 = open('intents.csv', 'w')
+
+    # create the csv writer object
+    csvwriter1 = csv.writer(vogue_csv1, delimiter="|")
+
+    count = 0
+
+    for convo in vogue_data:
+        if count == 0:
+            csvwriter1.writerow(header)
+
+            count += 1
+
+        if len(convo["response"]["intents"]) > 0:
+            # print("im writing")
+            intents = convo["response"]["intents"][0].values()
+            input = convo["response"]["input"]["text"]
+            output = convo["response"]["output"]["text"]
+
+            if input is None:
+                input = "Null"
+
+            if len(output) == 0:
+                output.append("Null")
+
+            string = []
+            for val in intents:
+                string.append(val)
+
+            string.append(input)
+            string.append(output[0])
+            csvwriter1.writerow(string)
+
+    vogue_csv1.close()
